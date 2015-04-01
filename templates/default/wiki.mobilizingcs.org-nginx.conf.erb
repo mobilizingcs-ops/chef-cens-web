@@ -1,0 +1,37 @@
+server {
+  listen 443;
+  server_name wiki.mobilizingcs.org;
+  ssl on;
+  ssl_certificate /etc/ssl/certs/mobilizingcs.org.crt;
+  ssl_certificate_key /etc/ssl/private/mobilizingcs.org.key;
+
+  root /var/www/wiki.mobilizingcs.org;
+  client_max_body_size 20m;
+
+  location / {
+    index doku.php;
+    try_files $uri $uri/ @dokuwiki;
+  }
+  location @dokuwiki {
+    rewrite ^/_media/(.*) /lib/exe/fetch.php?media=$1 last;
+    rewrite ^/_detail/(.*) /lib/exe/detail.php?media=$1 last;
+    rewrite ^/_export/([^/]+)/(.*) /doku.php?do=export_$1&id=$2 last;
+    rewrite ^/(.*) /doku.php?id=$1 last;
+  }
+  location ~ \.php$ {
+    include fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_pass unix:/var/run/php-fpm.sock;
+  }
+  location ~ /(data|conf|bin|inc)/ {
+    deny all;
+  }
+  location ~ /\.ht {
+    deny  all;
+  }
+}
+server {
+  listen 80;
+  server_name wiki.mobilizingcs.org;
+  return 301 https://$host$request_uri;
+}

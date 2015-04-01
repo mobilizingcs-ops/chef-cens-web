@@ -1,0 +1,54 @@
+server {
+  listen 443;
+  server_name web.ohmage.org;
+  ssl on;
+  ssl_certificate /etc/ssl/certs/ohmage.org.crt;
+  ssl_certificate_key /etc/ssl/private/ohmage.org.key;
+
+  root /var/www/web.ohmage.org;
+  index index.html index.php;
+  autoindex off;
+
+  location /mobilize/data {
+    autoindex on;
+  }
+  location /ohmage/packages {
+    autoindex on;
+  }
+
+  #home dir alias
+  location ~ ^/~(.+?)/(.+?\.php)$ {
+    root           /home/$1/public_html/$2;
+    fastcgi_pass   unix:/var/run/php-fpm.sock;
+    fastcgi_param  SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    include        fastcgi_params;
+  }
+  location ~ ^/~(.+?)(/.*)?$ {
+    alias /home/$1/public_html$2;
+  }
+
+  location ~ \.php$ {
+    fastcgi_pass   unix:/var/run/php-fpm.sock;
+    fastcgi_index index.php;
+    fastcgi_param  SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    include        fastcgi_params;
+  }
+  location ~ /\.ht {
+    deny all;
+  }
+  location /ci-github-webhook/ {
+    proxy_pass https://ci.ohmage.org/github-webhook/;
+  }
+}
+server {
+  listen 80;
+  server_name web.ohmage.org;
+  root /var/www/web.ohmage.org;
+  # R hates https: https://github.com/mobilizingcs/MobilizeSimple/issues/41
+  location /mobilize/resources/ids/data/ {
+    autoindex on;
+  }
+  location / {
+   return 301 https://$host$request_uri;
+  }
+}

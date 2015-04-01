@@ -1,0 +1,24 @@
+server {
+  listen 443;
+  server_name apps.ohmage.org;
+  ssl on;
+  ssl_certificate /etc/ssl/certs/ohmage.org.crt;
+  ssl_certificate_key /etc/ssl/private/ohmage.org.key;
+
+  root /var/www/apps.ohmage.org/public;
+
+  location / {
+    index index.php;
+    try_files $uri $uri/ /index.php?$args;
+  }
+  location ~ \.php$ {
+    include fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_pass unix:/var/run/php-fpm.sock;
+  }
+}
+server {
+  listen 80;
+  server_name apps.ohmage.org;
+  return 301 https://$host$request_uri;
+}
