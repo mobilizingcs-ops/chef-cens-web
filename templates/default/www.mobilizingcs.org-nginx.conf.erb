@@ -4,6 +4,7 @@ server {
   root /var/www/www.mobilizingcs.org;
   index index.html index.php;
   autoindex off;
+  client_max_body_size 100M;
 
   location / {
     try_files $uri $uri/ /index.php?$args;
