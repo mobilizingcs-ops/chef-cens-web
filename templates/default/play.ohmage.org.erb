@@ -1,0 +1,18 @@
+server {
+  listen 443;
+  server_name play.ohmage.org;
+  ssl on;
+  ssl_certificate /etc/ssl/certs/ohmage.org.crt;
+  ssl_certificate_key /etc/ssl/private/ohmage.org.key;
+
+  root /var/www/play.ohmage.org;
+  index.html;
+}
+
+server {
+  listen 80;
+  server_name play.ohmage.org;
+  location / {
+   return 301 https://$host$request_uri;
+  }
+}
