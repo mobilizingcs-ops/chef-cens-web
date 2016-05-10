@@ -4,7 +4,7 @@ maintainer_email 'technolengy@gmail.com'
 license 'Apache 2.0'
 description 'Installs/Configures cens-web'
 long_description 'Installs/Configures cens-web'
-version '0.0.10'
+version '0.0.11'
 
 %w(ubuntu).each do |os|
   supports os
