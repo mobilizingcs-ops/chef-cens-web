@@ -46,7 +46,7 @@ include_recipe 'nginx'
   end
 end
 
-%w(analytics.ohmage.org web.ohmage.org wiki.mobilizingcs.org www.mobilizingcs.org play.ohmage.org).each do |site|
+%w(analytics.ohmage.org web.ohmage.org www.mobilizingcs.org play.ohmage.org).each do |site|
   template "/etc/nginx/sites-available/#{site}" do
     source "#{site}-nginx.conf.erb"
     mode '0755'
